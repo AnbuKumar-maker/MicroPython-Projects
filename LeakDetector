@@ -1,0 +1,41 @@
+import pycom
+import time
+import machine
+from machine import Pin
+from onewire import DS18X20
+from onewire import OneWire
+from simple import MQTTClient
+from network import WLAN
+#
+def settimeout(duration):
+    pass
+#
+client = MQTTClient(client_id="example_client", server="io.adafruit.com",user="you_user", password="your_pass", port=1883)
+client.settimeout = settimeout
+client.connect()
+#
+#DS18B20 1-wire connected to pin P10
+ow = OneWire(Pin('P10'))
+temp = DS18X20(ow)
+# Moisture sensor
+adc = machine.ADC()
+apin = adc.channel(pin='P16',attn=3)
+# Function for taking average of 100 readings
+def smooth_reading():
+   avg = 0
+   _AVG_NUM = const(100)
+   for _ in range (_AVG_NUM):
+       avg += apin()
+   avg /= _AVG_NUM
+   return(avg)
+#
+while True:
+   curr_temperature = temp.read_temp_async()
+   print(str(curr_temperature))
+   client.publish("you_user/feeds/wipy-temperature", str(curr_temperature))
+
+   analog_val = smooth_reading()
+   print(analog_val)
+   client.publish("you_user/feeds/wipy-moisture", str(analog_val))
+   time.sleep(1)
+   print("################")
