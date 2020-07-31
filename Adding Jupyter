@@ -1,0 +1,30 @@
+# import library to deal with pins:
+from machine import Pin
+
+# define pin 0 as output
+led = Pin(0, Pin.OUT)
+
+# define value of "led" as "1" or "True" to turn on the LED
+led.value(1)
+
+# define value of "led" as "0" or "False" to turn off the LED
+led.value(0)
+
+# also you can use .on() or .off methods to control the pin:
+led.on()
+
+led.off()
+
+from time import sleep
+
+for i in range(5):
+    led.on()
+    sleep(0.5)
+    led.off()
+    sleep(0.5)
+    
+# define pin 13 as an input and activate an internal Pull-up resistor:
+button = Pin(13, Pin.IN, Pin.PULL_UP)
+
+# Read button state:
+print(button.value())
